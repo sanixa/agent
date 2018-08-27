@@ -133,7 +133,7 @@ def no_switch(dpid):
 
 def active(act):
     global TEMPFILE,USERNAME,PASSWORD,ODL_HOST
-    if act == "True": 
+    if act == "True":
         command = "curl -X POST -H \"Content-Type: application/xml\" -d @" + TEMPFILE + " --user "+USERNAME+":"+PASSWORD+" http://" + ODL_HOST + ":8080/restconf/operations/sal-flow:add-flow"
         os.system(command)
 
@@ -162,7 +162,7 @@ def active(act):
 
 def no_active(act):
     global TEMPFILE,USERNAME,PASSWORD,ODL_HOST
-    if act == "True":      
+    if act == "True":
         command = "curl -X POST -H \"Content-Type: application/xml\" -d @" + TEMPFILE + " --user "+USERNAME+":"+PASSWORD+" http://" + ODL_HOST + ":8080/restconf/operations/sal-flow:remove-flow"
         os.system(command)
 
@@ -174,7 +174,7 @@ def no_active(act):
         if fid == -1:
             print "correct"
         else:
-            print "error"        
+            print "error"
     elif act == "False":
         command = "curl -X POST -H \"Content-Type: application/xml\" -d @" + TEMPFILE + " --user "+USERNAME+":"+PASSWORD+" http://" + ODL_HOST + ":8080/restconf/operations/sal-flow:add-flow"
         os.system(command)
@@ -217,6 +217,74 @@ def main():
         modifity_2l("ethernet-destination", "address",arg)
     elif cmd == "no dst-mac":
         no_modifity_2l("ethernet-destination", "address",arg)
+    elif cmd == "dst-port":
+        if arg == "http":
+            arg = "80"
+        elif arg == "dns":
+            arg = "53"
+        elif arg == "https":
+            arg = "443"
+        elif arg == "ssh":
+            arg = "22"
+        modifity("tcp-destination-port",arg)
+    elif cmd == "no dst-port":
+        if arg == "http":
+            arg = "80"
+        elif arg == "dns":
+            arg = "53"
+        elif arg == "https":
+            arg = "443"
+        elif arg == "ssh":
+            arg = "22"
+        no_modifity("tcp-destination-port",arg)
+    elif cmd == "ether-type":
+        if arg == "arp":
+            arg = "2054"
+        elif arg == "lldp":
+            arg = "35020"
+        elif arg == "802.1Q":
+            arg = "33024"
+        elif arg == "ip":
+            arg = "2048"
+        elif arg == "mpls":
+            arg = "34887"
+        elif arg == "rarp":
+            arg = "32821"
+        elif arg == "mpls-mc":
+            arg = "34888"
+        elif arg == "appletalk-aarp":
+            arg = "33011"
+        elif arg == "ipv6":
+            arg = "34525"
+        elif arg == "novell":
+            arg = "33080"
+        elif arg == "ipx":
+            arg = "33079"
+        modifity("tcp-destination-port",arg)
+    elif cmd == "no ether-type":
+        if arg == "arp":
+            arg = "2054"
+        elif arg == "lldp":
+            arg = "35020"
+        elif arg == "802.1Q":
+            arg = "33024"
+        elif arg == "ip":
+            arg = "2048"
+        elif arg == "mpls":
+            arg = "34887"
+        elif arg == "rarp":
+            arg = "32821"
+        elif arg == "mpls-mc":
+            arg = "34888"
+        elif arg == "appletalk-aarp":
+            arg = "33011"
+        elif arg == "ipv6":
+            arg = "34525"
+        elif arg == "novell":
+            arg = "33080"
+        elif arg == "ipx":
+            arg = "33079"
+        no_modifity("tcp-destination-port",arg)
     else:
         pass
 if __name__ == "__main__":
