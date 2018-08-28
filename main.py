@@ -260,7 +260,7 @@ def main():
             arg = "33080"
         elif arg == "ipx":
             arg = "33079"
-        modifity("tcp-destination-port",arg)
+        modifity_2l("ethernet-type", "type",arg)
     elif cmd == "no ether-type":
         if arg == "arp":
             arg = "2054"
@@ -284,7 +284,67 @@ def main():
             arg = "33080"
         elif arg == "ipx":
             arg = "33079"
-        no_modifity("tcp-destination-port",arg)
+        no_modifity_2l("ethernet-type", "type",arg)
+    elif cmd == "hard-timeout":
+        modifity("hard-timeout",arg)
+    elif cmd == "no hard-timeout":
+        no_modifity("hard-timeout",arg)
+    elif cmd == "idle-timeout":
+        modifity("idle-timeout",arg)
+    elif cmd == "no idle-timeout":
+        no_modifity("idle-timeout",arg)
+    elif cmd == "ingress-port":
+        modifity("in-port",arg)
+    elif cmd == "no ingress-port":
+        no_modifity("in-port",arg)
+    elif cmd == "priority":
+        modifity("priority",arg)
+    elif cmd == "no priority":
+        no_modifity("priority",arg)
+    elif cmd == "protocol":
+        modifity("ip-protocol",arg)
+    elif cmd == "no protocol":
+        no_modifity("ip-protocol",arg)
+    elif cmd == "src-ip":
+        modifity("ipv4-source",arg)
+    elif cmd == "no src-ip":
+        no_modifity("ipv4-source",arg)
+    elif cmd == "src-mac":
+        modifity_2l("ethernet-source", "address",arg)
+    elif cmd == "no src-mac":
+        no_modifity_2l("ethernet-source", "address",arg)
+    elif cmd == "src-port":
+        if arg == "http":
+            arg = "80"
+        elif arg == "dns":
+            arg = "53"
+        elif arg == "https":
+            arg = "443"
+        elif arg == "ssh":
+            arg = "22"
+        modifity("tcp-source-port",arg)
+    elif cmd == "no src-port":
+        if arg == "http":
+            arg = "80"
+        elif arg == "dns":
+            arg = "53"
+        elif arg == "https":
+            arg = "443"
+        elif arg == "ssh":
+            arg = "22"
+        no_modifity("tcp-source-port",arg)
+    elif cmd == "tos-bits":
+        modifity("tosBits",arg)
+    elif cmd == "no tos-bits":
+        no_modifity("tosBits",arg)
+    elif cmd == "vlan-id":
+        modifity_2l("vlan-id", "vlan-id",arg)
+    elif cmd == "no vlan-id":
+        no_modifity_2l("vlan-id", "vlan-id",arg)
+    elif cmd == "vlan-priority":
+        modifity("vlanPriority",arg)
+    elif cmd == "no vlan-priority":
+        no_modifity("vlanPriority",arg)
     else:
         pass
 if __name__ == "__main__":
