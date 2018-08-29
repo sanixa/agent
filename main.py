@@ -345,6 +345,14 @@ def main():
         modifity("vlanPriority",arg)
     elif cmd == "no vlan-priority":
         no_modifity("vlanPriority",arg)
+    elif cmd == "widcards":  #match field
+        modifity("widcards",arg)
+    elif cmd == "no widcards":
+        no_modifity("widcards",arg)
+    elif cmd == "flow-entry":
+        modifity("id",arg)
+    elif cmd == "no flow-entry":
+        no_modifity("id",arg)
     else:
         pass
 if __name__ == "__main__":
