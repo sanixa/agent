@@ -9,6 +9,7 @@ TEMPFILE = "temp.xml"
 USERNAME = "admin"
 PASSWORD = "admin"
 ODL_HOST = "localhost"
+INTERFACE = "ens33"
 ########xml node id need check#######################
 ##########flow._verification new check###########
 
@@ -189,10 +190,207 @@ def no_active(act):
     else:
         print("input error")
 
+def switchport_mode(interface):
+    command = "ovs-vsctl set Interface " + interface + " type=external"
+    os.system(command)
+
+    command = "ovs-vsctl list Interface " + interface + " > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "type" in line and "external" in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def no_switchport_mode(interface):
+    command = "ovs-vsctl set Interface " + interface + " type=internal"
+    os.system(command)
+
+    command = "ovs-vsctl list Interface " + interface + " > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "type" in line and "internal" in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def core_switch():
+    command = "ovs-vsctl set bridge my-br other-config:core-switch=true"
+    os.system(command)
+
+    command = "ovs-vsctl list bridge my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "core-switch=\"true\"" in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def no_core_switch():
+    command = "ovs-vsctl remove bridge my-br other-config core-switch"
+    os.system(command)
+
+    command = "ovs-vsctl list bridge my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "core-switch" in line:
+            b = True
+    if b == True:
+        print "n"
+    else:
+        print "y"
+
+def interface(interface):
+    command = "ovs-vsctl add-port my-br " + interface
+    os.system(command)
+
+    command = "ovs-vsctl list-ports my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if interface in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def no_interface(interface):
+    command = "ovs-vsctl del-port my-br " + interface
+    os.system(command)
+
+    command = "ovs-vsctl list-ports my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if interface in line:
+            b = True
+    if b == True:
+        print "n"
+    else:
+        print "y"
+
+def interface_alias(name):
+    global INTERFACE
+    command = "ovs-vsctl set Interface " + INTERFACE + " other-config:alias=" + name
+    os.system(command)
+
+    command = "ovs-vsctl list Interface "+ INTERFACE + " > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "alias=\"" + name + "\"" in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def no_interface_alias(name):
+    global INTERFACE
+    command = "ovs-vsctl remove Interface " + INTERFACE + " other-config alias"
+    os.system(command)
+
+    command = "ovs-vsctl list Interface "+ INTERFACE + " > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "alias" in line:
+            b = True
+    if b == True:
+        print "n"
+    else:
+        print "y"
+
+def switch_alias(name):
+    command = "ovs-vsctl set bridge my-br other-config:alias=" + name
+    os.system(command)
+
+    command = "ovs-vsctl list bridge my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "alias=\"" + name + "\"" in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def no_switch_alias(name):
+    command = "ovs-vsctl remove bridge my-br other-config alias"
+    os.system(command)
+
+    command = "ovs-vsctl list bridge my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "alias" in line:
+            b = True
+    if b == True:
+        print "n"
+    else:
+        print "y"
+
+def tunnel_termination(arg):
+    command = "ovs-vsctl set bridge my-br other-config:tunnel=" + arg
+    os.system(command)
+
+    command = "ovs-vsctl list bridge my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "tunnel=\"" + arg + "\"" in line:
+            b = True
+    if b == True:
+        print "y"
+    else:
+        print "n"
+
+def no_tunnel_termination():
+    command = "ovs-vsctl remove bridge my-br other-config tunnel"
+    os.system(command)
+
+    command = "ovs-vsctl list bridge my-br > temp"
+    os.system(command)
+    b = False
+    f = open('temp', 'r')
+    for line in f:
+        if "other_config" in line and "tunnel" in line:
+            b = True
+    if b == True:
+        print "n"
+    else:
+        print "y"
+
+
+
+
 
 def main():
-    cmd = "dst-mac"
-    arg = "12:34:56:65:43:21"
+    cmd = "interface-alias"
+    arg = "456"
     if cmd == "switch":
         switch(arg)
     elif cmd == "no switch":
@@ -353,6 +551,30 @@ def main():
         modifity("id",arg)
     elif cmd == "no flow-entry":
         no_modifity("id",arg)
+    elif cmd == "switch-port mode":
+        switchport_mode(arg)
+    elif cmd == "no switch-port mode":
+        no_switchport_mode(arg)
+    elif cmd == "core-switch":
+        core_switch()
+    elif cmd == "no core-switch":
+        no_core_switch()
+    elif cmd == "interface":
+        interface(arg)
+    elif cmd == "no interface":
+        no_interface(arg)
+    elif cmd == "interface-alias":
+        interface_alias(arg)
+    elif cmd == "no interface-alias":
+        no_interface_alias(arg)
+    elif cmd == "switch-alias":
+        switch_alias(arg)
+    elif cmd == "no switch-alias":
+        no_switch_alias(arg)
+    elif cmd == "tunnel termination":
+        tunnel_termination(arg)
+    elif cmd == "no tunnel termination":
+        no_tunnel_termination()
     else:
         pass
 if __name__ == "__main__":
