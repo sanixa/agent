@@ -389,6 +389,8 @@ def no_tunnel_termination():
 
 
 def main():
+    ##if set src-port or dst-port ,ip protocol must be 6
+    ## ipv4-source and ipv4-destination must be x.x.x.x/32
     cmd = "interface-alias"
     arg = "456"
     if cmd == "switch":
@@ -415,7 +417,7 @@ def main():
         modifity_2l("ethernet-destination", "address",arg)
     elif cmd == "no dst-mac":
         no_modifity_2l("ethernet-destination", "address",arg)
-    elif cmd == "dst-port":
+    elif cmd == "dst-port":  
         if arg == "http":
             arg = "80"
         elif arg == "dns":
@@ -424,7 +426,7 @@ def main():
             arg = "443"
         elif arg == "ssh":
             arg = "22"
-        modifity("tcp-destination-port",arg)
+        modifity("tcp-destination-port",arg) 
     elif cmd == "no dst-port":
         if arg == "http":
             arg = "80"
@@ -532,25 +534,25 @@ def main():
             arg = "22"
         no_modifity("tcp-source-port",arg)
     elif cmd == "tos-bits":
-        modifity("tosBits",arg)
+        modifity("ip-dscp",arg)
     elif cmd == "no tos-bits":
-        no_modifity("tosBits",arg)
+        no_modifity("ip-dscp",arg)
     elif cmd == "vlan-id":
         modifity_2l("vlan-id", "vlan-id",arg)
     elif cmd == "no vlan-id":
         no_modifity_2l("vlan-id", "vlan-id",arg)
     elif cmd == "vlan-priority":
-        modifity("vlanPriority",arg)
+        modifity("vlan-pcp",arg)
     elif cmd == "no vlan-priority":
-        no_modifity("vlanPriority",arg)
-    elif cmd == "widcards":  #match field
-        modifity("widcards",arg)
-    elif cmd == "no widcards":
-        no_modifity("widcards",arg)
+        no_modifity("vlan-pcp",arg)
+    elif cmd == "wildcards":  #match field
+        modifity("wildcards",arg)
+    elif cmd == "no wildcards":
+        no_modifity("wildcards",arg)
     elif cmd == "flow-entry":
-        modifity("id",arg)
+        modifity("flow-name",arg)
     elif cmd == "no flow-entry":
-        no_modifity("id",arg)
+        no_modifity("flow-name",arg)
     elif cmd == "switch-port mode":
         switchport_mode(arg)
     elif cmd == "no switch-port mode":

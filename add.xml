@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<input xmlns="urn:opendaylight:flow:service">
+   <barrier>false</barrier>
+   <node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:1"]</node>
+
+   <flow-name>FooXf17</flow-name>
+   <cookie>55</cookie>
+   <flags>SEND_FLOW_REM</flags>
+   <hard-timeout>0</hard-timeout>
+   <idle-timeout>0</idle-timeout>
+   <installHw>false</installHw>
+   <match>
+    <ethernet-match>
+     <ethernet-type>
+       <type>2048</type>
+     </ethernet-type>
+     <ethernet-destination>
+       <address>ff:ff:ff:ff:ff:ff</address>
+     </ethernet-destination>
+     <ethernet-source>
+       <address>00:00:00:11:23:ae</address>
+     </ethernet-source>
+    </ethernet-match>
+    <vlan-match>
+       <vlan-id>
+           <vlan-id>78</vlan-id>
+           <vlan-id-present>true</vlan-id-present>
+       </vlan-id>
+    <vlan-pcp>3</vlan-pcp>
+    </vlan-match>
+    <ipv4-source>10.1.2.3/32</ipv4-source>
+    <ipv4-destination>10.0.10.2/32</ipv4-destination>
+    <ip-match>
+       <ip-protocol>6</ip-protocol>
+       <ip-dscp>15</ip-dscp>
+       <ip-ecn>1</ip-ecn>
+    </ip-match>
+    <tcp-source-port>25364</tcp-source-port>
+    <tcp-destination-port>8080</tcp-destination-port>
+    <in-port>0</in-port>
+    <wildcards>0</wildcards>
+   </match>
+   <instructions>
+    <instruction>
+     <order>0</order>
+     <apply-actions>
+       <action>
+         <output-action>
+           <output-node-connector>1</output-node-connector>
+         </output-action>
+         <order>0</order>
+       </action>
+     </apply-actions>
+    </instruction>
+   </instructions>
+   <priority>0</priority>
+   <strict>false</strict>
+   <table_id>0</table_id>
+</input>
+
