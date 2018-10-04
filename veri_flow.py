@@ -37,15 +37,13 @@ def _flow_data(cmd):
         flow = flow[:i.find("actions") + length] + s + flow[len(i) + length + 1:]
         length += len(i)
     flow = flow.replace("\n",",")
-    flow = flow.replace(",ip,",",")
-    flow = flow.replace("send_flow_rem","")
     flow = re.split(r", | |,", flow)
     
     flow_table = {}
     single_flow = {}
     count = 0       # flow#
     for elem in flow:
-        if elem == "":
+        if elem.find("=") == -1:
             continue
         temp = elem.split("=")
         if temp[0] == "actions":
@@ -57,103 +55,149 @@ def _flow_data(cmd):
             single_flow.update({temp[0]:temp[1]})
     return flow_table,count
 
-def _flow_id(xmldict, flow_table, count):
-    fid = -1        
-    for i in range(count):
-        temp_l = []
-        flow_l = [flow_table[i]['cookie'],flow_table[i]['priority'],flow_table[i]['table']]
-        if 'cookie' in xmldict:
-            temp_l.append(hex(int(xmldict['cookie'])))
-        else:
-            temp_l.append(hex(0))
-        if 'priority' in xmldict:
-            temp_l.append(xmldict['priority'])
-        else:
-            temp_l.append(int(0))
-        if 'table_id' in xmldict:
-            temp_l.append(xmldict['table_id'])
-        else:
-            temp_l.append(int(0))
-        if temp_l == flow_l:
-            fid = i
-        temp_l = []
-    return fid
 
-def _flow_id_u(xmldict, flow_table, count):
-    fid = -1        
-    for i in range(count):
-        temp_l = []
-        flow_l = [flow_table[i]['cookie'],flow_table[i]['priority'],flow_table[i]['table']]
-        if 'cookie' in xmldict['updated-flow']:
-            temp_l.append(hex(int(xmldict['updated-flow']['cookie'])))
-        else:
-            temp_l.append(hex(0))
-        if 'priority' in xmldict['updated-flow']:
-            temp_l.append(xmldict['updated-flow']['priority'])
-        else:
-            temp_l.append(int(0))
-        if 'table_id' in xmldict['updated-flow']:
-            temp_l.append(xmldict['updated-flow']['table_id'])
-        else:
-            temp_l.append(int(0))
-        if temp_l == flow_l:
-            fid = i
-        temp_l = []
-    return fid
-
-def _verification(xmldict, flow_table, fid):
-    result = "correct"
-    action = xmldict['instructions']['instruction']['apply-actions']['action']['output-action']['output-node-connector']
+def _verification(xmldict, flow_table, count):
+    attr = []
+    try:
+        address = xmldict['cookie']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    try:
+        address = xmldict['table_id']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    try:
+        address = xmldict['priority']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    try:
+        address = xmldict['match']['vlan-match']['vlan-id']['vlan-id']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    try:
+        address = xmldict['match']['vlan-pcp']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
     try:
         address = xmldict['match']['ethernet-match']['ethernet-source']['address']
     except KeyError:
-        pass
+        attr.append(0)
     else:
-        if address != flow_table[fid]['dl_src']:
-            result = "error"
-    
+        attr.append(1)
     try:
         address = xmldict['match']['ethernet-match']['ethernet-destination']['address']
     except KeyError:
-        pass
+        attr.append(0)
     else:
-        if address != flow_table[fid]['dl_dst']:
-            result = "error"
-    
+        attr.append(1)
     try:
         address = xmldict['match']['ipv4-source']
     except KeyError:
-        pass
+        attr.append(0)
     else:
-        if address.find('/') != -1:
-            address = address[:address.find('/')]
-        if address != flow_table[fid]['nw_src']:
-            result = "error"
-
+        attr.append(1)
     try:
         address = xmldict['match']['ipv4-destination']
     except KeyError:
-        pass
+        attr.append(0)
     else:
-        if address.find('/') != -1:
-            address = address[:address.find('/')]
-        if address != flow_table[fid]['nw_dst']:
-            result = "error"
-
+        attr.append(1)
     try:
-        i = int(action)
-    except ValueError:
-        if action == "INPORT":
-            if flow_table[fid]['actions'] != "IN_PORT":
-                result = "error"
-        else:
-           if flow_table[fid]['actions'] != action:
-                result = "error"
+        address = xmldict['match']['ip-match']['ip-dscp']
+    except KeyError:
+        attr.append(0)
     else:
-        if flow_table[fid]['actions'] != "output:" + str(i):
-            result = "error"
+        attr.append(1)
+    try:
+        address = xmldict['match']['ip-match']['ip-ecn']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    try:
+        address = xmldict['match']['tcp-source-port']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    try:
+        address = xmldict['match']['tcp-destination-port']
+    except KeyError:
+        attr.append(0)
+    else:
+        attr.append(1)
+    for i in range(count):
+        if attr[0] == 1:
+            if flow_table[i]['cookie'] != xmldict['cookie']:
+                continue
+        if attr[1] == 1:
+            if flow_table[i]['table'] != xmldict['table_id']:
+                continue
+        if attr[2] == 1:
+            if flow_table[i]['priority'] != xmldict['priority']:
+                continue
+        if attr[3] == 1:
+            if flow_table[i]['dl_vlan'] != xmldict['match']['vlan-match']['vlan-id']['vlan-id']:
+                continue
+        if attr[4] == 1:
+            if flow_table[i]['dl_vlan_pcp'] != xmldict['match']['vlan-pcp']:
+                continue
+        if attr[5] == 1:
+            if flow_table[i]['dl_src'] != xmldict['match']['ethernet-match']['ethernet-source']['address']:
+                continue
+        if attr[6] == 1:
+            if flow_table[i]['dl_dst'] != xmldict['match']['ethernet-match']['ethernet-destination']['address']:
+                continue
+        if attr[7] == 1:
+            address = xmldict['match']['ipv4-source']
+            address = address[:address.find('/')]
+            if flow_table[i]['nw_src'] != address:
+                continue
+        if attr[8] == 1:
+            address = xmldict['match']['ipv4-destination']
+            address = address[:address.find('/')]
+            if flow_table[i]['nw_dst'] != address:
+                continue
+        if attr[9] == 1:
+            a = int(flow_table[i]['nw_tos'])
+            b = int(xmldict['match']['ip-match']['ip-dscp'])
+            if  a != 4 * b:
+                continue
+        if attr[10] == 1:
+            if flow_table[i]['nw_ecn'] != xmldict['match']['ip-match']['ip-ecn']:
+                continue
+        if attr[11] == 1:
+            if flow_table[i]['tcp_src'] != xmldict['match']['tcp-source-port']:
+                continue
+        if attr[12] == 1:
+            if flow_table[i]['tcp_dst'] != xmldict['match']['tcp-destination-port']:
+                continue
 
-    return result
+        action = xmldict['instructions']['instruction']['apply-actions']['action']['output-action']['output-node-connector']
+        try:
+            t = int(action)
+        except ValueError:
+            if action == "INPORT":
+                if flow_table[i]['actions'] != "IN_PORT":
+                    continue
+            else:
+               if flow_table[i]['actions'] != action:
+                    continue
+        else:
+            if flow_table[i]['actions'] != "output:" + str(t):
+                continue
+        return "correct"
+    return "error"
 
 def _verification_u(xmldict, flow_table, fid):
     result = "correct"

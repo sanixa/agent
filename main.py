@@ -55,10 +55,7 @@ def modifity(key,action):
 
     xdict = flow._xml2dict(TEMPFILE)
     ftable,count = flow._flow_data('ovs-ofctl dump-flows my-br')
-    fid = flow._flow_id(xdict, ftable, count)
-    if fid == -1:
-        print "error"
-    result = flow._verification(xdict, ftable, fid)
+    result = flow._verification(xdict, ftable, count)
     print result
 
 def no_modifity(key,action):
@@ -71,11 +68,8 @@ def no_modifity(key,action):
     ftable,count = flow._flow_data('ovs-ofctl dump-flows my-br')
     if ftable == "":
         print "correct"
-    fid = flow._flow_id(xdict, ftable, count)
-    if fid == -1:
-        print "correct"
-    else:
-        print "error"
+    result = flow._verification(xdict, ftable, count)
+    print result
 
 def modifity_2l(key1, key2, action):
     xml2("add.xml", key1, key2, action)
@@ -85,10 +79,7 @@ def modifity_2l(key1, key2, action):
 
     xdict = flow._xml2dict(TEMPFILE)
     ftable,count = flow._flow_data('ovs-ofctl dump-flows my-br')
-    fid = flow._flow_id(xdict, ftable, count)
-    if fid == -1:
-        print "error"
-    result = flow._verification(xdict, ftable, fid)
+    result = flow._verification(xdict, ftable, count)
     print result
 
 def no_modifity_2l(key1, key2,action):
@@ -101,11 +92,8 @@ def no_modifity_2l(key1, key2,action):
     ftable,count = flow._flow_data('ovs-ofctl dump-flows my-br')
     if ftable == "":
         print "correct"
-    fid = flow._flow_id(xdict, ftable, count)
-    if fid == -1:
-        print "correct"
-    else:
-        print "error"
+    result = flow._verification(xdict, ftable, count)
+    print result
 
 def switch(arg):
     os.system("ovs-vsctl add-br my-br")
@@ -391,8 +379,8 @@ def no_tunnel_termination():
 def main():
     ##if set src-port or dst-port ,ip protocol must be 6
     ## ipv4-source and ipv4-destination must be x.x.x.x/32
-    cmd = "interface-alias"
-    arg = "456"
+    cmd = sys.argv[1]
+    arg = sys.argv[2]
     if cmd == "switch":
         switch(arg)
     elif cmd == "no switch":

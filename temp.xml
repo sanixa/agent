@@ -45,7 +45,7 @@
      <apply-actions>
        <action>
          <output-action>
-           <output-node-connector>1</output-node-connector>
+           <output-node-connector>3</output-node-connector>
          </output-action>
          <order>0</order>
        </action>
@@ -56,4 +56,3 @@
    <strict>false</strict>
    <table_id>0</table_id>
 </input>
-
