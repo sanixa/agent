@@ -138,7 +138,7 @@ def _verification(xmldict, flow_table, count):
         attr.append(1)
     for i in range(count):
         if attr[0] == 1:
-            if flow_table[i]['cookie'] != xmldict['cookie']:
+            if flow_table[i]['cookie'] != hex(int(xmldict['cookie'])):
                 continue
         if attr[1] == 1:
             if flow_table[i]['table'] != xmldict['table_id']:
@@ -177,10 +177,10 @@ def _verification(xmldict, flow_table, count):
             if flow_table[i]['nw_ecn'] != xmldict['match']['ip-match']['ip-ecn']:
                 continue
         if attr[11] == 1:
-            if flow_table[i]['tcp_src'] != xmldict['match']['tcp-source-port']:
+            if flow_table[i]['tp_src'] != xmldict['match']['tcp-source-port']:
                 continue
         if attr[12] == 1:
-            if flow_table[i]['tcp_dst'] != xmldict['match']['tcp-destination-port']:
+            if flow_table[i]['tp_dst'] != xmldict['match']['tcp-destination-port']:
                 continue
 
         action = xmldict['instructions']['instruction']['apply-actions']['action']['output-action']['output-node-connector']
@@ -198,59 +198,3 @@ def _verification(xmldict, flow_table, count):
                 continue
         return "correct"
     return "error"
-
-def _verification_u(xmldict, flow_table, fid):
-    result = "correct"
-    action = xmldict['updated-flow']['instructions']['instruction']['apply-actions']['action']['output-action']['output-node-connector']
-    try:
-        address = xmldict['updated-flow']['match']['ethernet-match']['ethernet-source']['address']
-    except KeyError:
-        pass
-    else:
-        if address != flow_table[fid]['dl_src']:
-            result = "error"
-    
-    try:
-        address = xmldict['updated-flow']['match']['ethernet-match']['ethernet-destination']['address']
-    except KeyError:
-        pass
-    else:
-        if address != flow_table[fid]['dl_dst']:
-            result = "error"
-    
-    try:
-        address = xmldict['updated-flow']['match']['ipv4-source']
-    except KeyError:
-        pass
-    else:
-        if address.find('/') != -1:
-            address = address[:address.find('/')]
-        if address != flow_table[fid]['nw_src']:
-            result = "error"
-
-    try:
-        address = xmldict['updated-flow']['match']['ipv4-destination']
-    except KeyError:
-        pass
-    else:
-        if address.find('/') != -1:
-            address = address[:address.find('/')]
-        if address != flow_table[fid]['nw_dst']:
-            result = "error"
-
-    try:
-        i = int(action)
-    except ValueError:
-        if action == "INPORT":
-            if flow_table[fid]['actions'] != "IN_PORT":
-                result = "error"
-        else:
-           if flow_table[fid]['actions'] != action:
-                result = "error"
-    else:
-        if flow_table[fid]['actions'] != "output:" + str(i):
-            result = "error"
-
-    return result
-
-

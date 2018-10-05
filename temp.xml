@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <input xmlns="urn:opendaylight:flow:service">
    <barrier>false</barrier>
-   <node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:2"]</node>
+   <node xmlns:inv="urn:opendaylight:inventory">/inv:nodes/inv:node[inv:id="openflow:123"]</node>
 
    <flow-name>FooXf17</flow-name>
    <cookie>55</cookie>
@@ -55,4 +55,5 @@
    <priority>0</priority>
    <strict>false</strict>
    <table_id>0</table_id>
+</input>d>
 </input>

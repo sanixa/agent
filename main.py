@@ -1,5 +1,7 @@
 import os
 import sys
+import subprocess
+import json
 try:
     import xml.etree.cElementTree as ET
 except ImportError:
@@ -11,7 +13,22 @@ PASSWORD = "admin"
 ODL_HOST = "localhost"
 INTERFACE = "ens33"
 ########xml node id need check#######################
-##########flow._verification new check###########
+
+def br_id_find():
+    global USERNAME,PASSWORD,ODL_HOST
+    command = "curl -X GET --user "+USERNAME+":"+PASSWORD+" http://" + ODL_HOST + ":8080/restconf/operational/opendaylight-inventory:nodes/"
+    output = subprocess.check_output(command, shell=True)
+    j = json.loads(output)
+    print j['nodes']['node'][0]['node-connector']['flow-node-inventory:name']
+def br_id_set():
+    with open(TEMPFILE, "r+") as f:
+        content = f.read()
+        temp = content.find("openflow")
+        t1 = content.find(":",temp)
+        t2 = content.find("\"",temp)
+        content = content[:t1+1] + "123" + content[t2:]
+        f.seek(0,0)
+        f.write(content)
 
 def xml(filename, col, content):
     ET.register_namespace('',"urn:opendaylight:flow:service")
@@ -565,7 +582,9 @@ def main():
         tunnel_termination(arg)
     elif cmd == "no tunnel termination":
         no_tunnel_termination()
+    elif cmd == "br_id":
+        br_id()
     else:
         pass
 if __name__ == "__main__":
-    main()
+    br_id_find()
