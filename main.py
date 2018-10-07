@@ -12,21 +12,36 @@ USERNAME = "admin"
 PASSWORD = "admin"
 ODL_HOST = "localhost"
 INTERFACE = "ens33"
-########xml node id need check#######################
+BRIDGE_NAME = "my-br"
 
 def br_id_find():
-    global USERNAME,PASSWORD,ODL_HOST
+    global USERNAME,PASSWORD,ODL_HOST,BRIDGE_NAME
     command = "curl -X GET --user "+USERNAME+":"+PASSWORD+" http://" + ODL_HOST + ":8080/restconf/operational/opendaylight-inventory:nodes/"
     output = subprocess.check_output(command, shell=True)
     j = json.loads(output)
-    print j['nodes']['node'][0]['node-connector']['flow-node-inventory:name']
+    i = 0
+    while True:
+        try:
+            name = j['nodes']['node'][i]['node-connector'][0]['flow-node-inventory:name']
+        except KeyError:
+            return "error"
+        else:
+            if name == BRIDGE_NAME:
+                t = j['nodes']['node'][i]['id']
+                return t[t.find(":")+1:]
+        i+=1
+   
 def br_id_set():
     with open(TEMPFILE, "r+") as f:
         content = f.read()
         temp = content.find("openflow")
         t1 = content.find(":",temp)
         t2 = content.find("\"",temp)
-        content = content[:t1+1] + "123" + content[t2:]
+        t = br_id_find()
+        if t == "error":
+            print "error"
+        else:
+            content = content[:t1+1] + t + content[t2:]
         f.seek(0,0)
         f.write(content)
 
@@ -587,4 +602,4 @@ def main():
     else:
         pass
 if __name__ == "__main__":
-    br_id_find()
+    br_id_set()
